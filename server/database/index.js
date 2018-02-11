@@ -10,11 +10,11 @@ module.exports = function connectToMySql() {
     database: process.env.GCP_SQL_DB_NAME,
   });
 
-  connection.connect(function(err) {
+  connection.connect((err) => {
     if (err) {
       return console.log(`Error connecting to database: ${err}`);
     }
 
-    console.log(`Connected as id ${connection.threadId}`);
+    return console.log(`Connected as id ${connection.threadId}`);
   });
 }
