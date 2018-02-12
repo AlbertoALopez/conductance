@@ -2,45 +2,41 @@ const dotenv = require('dotenv').config();
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const next = require('next');
-const { buildSchema } = require('graphql');
-const connectToMySql = require('./database');
+const db = require('./database');
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-
-const schema = buildSchema(`
-  type Query {
-    hello: String
-  }
-`);
-
-const root = {
-  hello: () => {
-    return 'Hello World!';
-  },
-};
+// GraphQL schema definition
+const AppSchema = require('./graphql/schema.js');
 
 app.prepare()
   .then(() => {
     const server = express();
-    // test connection to Google cloud SQL
-    connectToMySql();
+
+    // create connection to Google cloud SQL
+    db.connect((err) => {
+      if (err) {
+        return console.log(`Error connecting to database: ${err}`);
+      }
+
+      return console.log(`Connected as id ${db.threadId}`);
+    });
 
     server.use('/graphql', graphqlHTTP({
-      schema: schema,
-      rootValue: root,
+      schema: AppSchema,
       graphiql: true,
+      context: {
+        db,
+      },
     }));
 
-    server.get('*', (req, res) => {
-      return handle(req, res);
-    });
+    server.get('*', (req, res) => handle(req, res));
 
     server.listen(port, (err) => {
       if (err) throw err;
       console.log(`> Ready on http://localhost:${port}`);
     });
-});
+  });
