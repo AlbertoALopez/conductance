@@ -2,7 +2,6 @@ const dotenv = require('dotenv').config();
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const next = require('next');
-const db = require('./database');
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -16,20 +15,11 @@ app.prepare()
   .then(() => {
     const server = express();
 
-    // create connection to Google cloud SQL
-    db.connect((err) => {
-      if (err) {
-        return console.log(`Error connecting to database: ${err}`);
-      }
-
-      return console.log(`Connected as id ${db.threadId}`);
-    });
-
     server.use('/graphql', graphqlHTTP({
       schema: AppSchema,
       graphiql: true,
       context: {
-        db,
+        // db,
       },
     }));
 

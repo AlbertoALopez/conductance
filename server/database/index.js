@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 
-const db = mysql.createConnection({
+const mysqlPool = mysql.createPool({
+  connectionLimit: 10,
   host: process.env.GCP_SQL_HOST,
   user: process.env.GCP_SQL_USER,
   password: process.env.GCP_SQL_PASSWORD,
@@ -9,4 +10,7 @@ const db = mysql.createConnection({
   database: process.env.GCP_SQL_DB_NAME,
 });
 
-module.exports = db;
+
+module.exports = {
+  mysqlPool,
+};
