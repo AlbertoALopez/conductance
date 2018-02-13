@@ -2,6 +2,7 @@ const dotenv = require('dotenv').config();
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const next = require('next');
+const { mysqlPool } = require('./database');
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -10,6 +11,13 @@ const handle = app.getRequestHandler();
 
 // GraphQL schema definition
 const AppSchema = require('./graphql/schema.js');
+
+function serverShutDown() {
+  console.log('Server shutting down.');
+  // Close mysql pool connections
+  mysqlPool.end();
+  process.exit(0);
+}
 
 app.prepare()
   .then(() => {
@@ -30,3 +38,6 @@ app.prepare()
       console.log(`> Ready on http://localhost:${port}`);
     });
   });
+
+process.on('SIGTERM', () => serverShutDown());
+process.on('SIGINT', () => serverShutDown());
