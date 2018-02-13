@@ -6,7 +6,7 @@ const getValues = {
   users: () => {
     return new Promise((resolve, reject) => {
       mysqlPool.getConnection((poolConnectionError, connection) => {
-        if (poolConnectionError) reject(console.log(`Error connection to pool: ${poolConnectionError}`));
+        if (poolConnectionError) reject(console.log(`Error connecting to pool: ${poolConnectionError}`));
         connection.query('SELECT * FROM user;', (error, results, fields) => {
           // Release thread from pool
           connection.release();

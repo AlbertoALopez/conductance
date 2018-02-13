@@ -25,3 +25,6 @@ SQL_LOCAL_ADDRESS = 99.999.999.99
 
 Start the development server with `npm run dev`. This will spin up the Express server and serve up the bundled JavaScript
 automatically courtesy of NextJS.
+
+To run a production instance, use `npm run build`. This will create a bundle in root/.next/dist. Then, run
+`npm run start` to spin up the production express server.
